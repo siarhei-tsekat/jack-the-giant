@@ -9,25 +9,38 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
+import com.me.jackthegiant.sprites.Cloud;
 
 public class Gameplay implements Screen {
 
+    private World world;
     private GameMain game;
     private Sprite[] bg;
-    private OrthographicCamera camera;
+    private OrthographicCamera mainCamera;
+    private Box2DDebugRenderer b2dr;
     private Viewport gameViewPort;
+    private float lastYPosition;
+    Cloud cloud;
 
     public Gameplay(GameMain game) {
         this.game = game;
+        mainCamera = new OrthographicCamera();
+        gameViewPort = new FillViewport(W_WIDTH, W_HEIGHT, mainCamera);
+
+        mainCamera.position.set(gameViewPort.getWorldWidth() / 2, gameViewPort.getWorldHeight() / 2, 0);
+
+        world = new World(new Vector2(0, -10), true);
+        b2dr = new Box2DDebugRenderer();
+
         createBackgrounds();
-        camera = new OrthographicCamera(W_WIDTH, W_HEIGHT);
-        camera.position.set(W_WIDTH / 2f, W_HEIGHT / 2f, 0);
-        gameViewPort = new FillViewport(W_WIDTH, W_HEIGHT, camera);
+        cloud = new Cloud(world, W_WIDTH / 2f, W_HEIGHT / 2f, "cloud.png");
+
     }
 
     private void createBackgrounds() {
@@ -36,6 +49,7 @@ public class Gameplay implements Screen {
             bg[i] = new Sprite(new Texture("background.png"));
             bg[i].setPosition(0, -(i * bg[i].getHeight()));
         }
+        lastYPosition = Math.abs(bg[bg.length - 1].getY());
     }
 
     private void drawBackgrounds() {
@@ -49,35 +63,42 @@ public class Gameplay implements Screen {
 
     }
 
-    public void update(float dt) {
-        moveCamera();
+    private void checkBackgroundPosition() {
+        for (int i = 0; i < bg.length; i++) {
+            if (bg[i].getY() - bg[i].getHeight() / 2f > mainCamera.position.y) {
+                float newPosition = bg[i].getHeight() + lastYPosition;
+                bg[i].setPosition(0, -newPosition);
+                lastYPosition = newPosition;
+            }
+        }
     }
 
     private void moveCamera() {
-        camera.position.y -= 1;
+        mainCamera.position.y -= 1;
     }
 
     @Override
     public void render(float delta) {
-
-        update(delta);
+        moveCamera();
+        checkBackgroundPosition();
+        mainCamera.update();
+        game.batch.setProjectionMatrix(mainCamera.combined);
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
-
         drawBackgrounds();
-
+        game.batch.draw(cloud, cloud.getX(), cloud.getY());
         game.batch.end();
 
-        game.batch.setProjectionMatrix(camera.combined);
-        camera.update();
+        b2dr.render(world, mainCamera.combined);
+
     }
 
     @Override
     public void resize(int width, int height) {
-
+        gameViewPort.update(width, height);
     }
 
     @Override
@@ -97,6 +118,7 @@ public class Gameplay implements Screen {
 
     @Override
     public void dispose() {
-
+        world.dispose();
+        b2dr.dispose();
     }
 }
