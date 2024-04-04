@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
 import com.me.jackthegiant.sprites.Cloud;
+import com.me.jackthegiant.sprites.CloudsController;
 
 public class Gameplay implements Screen {
 
@@ -26,10 +27,10 @@ public class Gameplay implements Screen {
     private Box2DDebugRenderer b2dr;
     private Viewport gameViewPort;
     private float lastYPosition;
-    Cloud cloud;
+    private CloudsController cloudsController;
 
-    public Gameplay(GameMain game) {
-        this.game = game;
+    public Gameplay(GameMain gameMain) {
+        game = gameMain;
         mainCamera = new OrthographicCamera();
         gameViewPort = new FillViewport(W_WIDTH, W_HEIGHT, mainCamera);
 
@@ -39,8 +40,8 @@ public class Gameplay implements Screen {
         b2dr = new Box2DDebugRenderer();
 
         createBackgrounds();
-        cloud = new Cloud(world, W_WIDTH / 2f, W_HEIGHT / 2f, "cloud.png");
-
+        cloudsController = new CloudsController(world);
+//        cloud = new Cloud(world, W_WIDTH / 2f, W_HEIGHT / 2f, "cloud_0.png");
     }
 
     private void createBackgrounds() {
@@ -58,11 +59,6 @@ public class Gameplay implements Screen {
         }
     }
 
-    @Override
-    public void show() {
-
-    }
-
     private void checkBackgroundPosition() {
         for (int i = 0; i < bg.length; i++) {
             if (bg[i].getY() - bg[i].getHeight() / 2f > mainCamera.position.y) {
@@ -73,8 +69,13 @@ public class Gameplay implements Screen {
         }
     }
 
+    @Override
+    public void show() {
+
+    }
+
     private void moveCamera() {
-        mainCamera.position.y -= 1;
+        mainCamera.position.y -= 3;
     }
 
     @Override
@@ -84,12 +85,16 @@ public class Gameplay implements Screen {
         mainCamera.update();
         game.batch.setProjectionMatrix(mainCamera.combined);
 
+        cloudsController.setCameraY(mainCamera.position.y);
+        cloudsController.createAndArrangeNewClouds();
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         game.batch.begin();
         drawBackgrounds();
-        game.batch.draw(cloud, cloud.getX(), cloud.getY());
+        cloudsController.drawClouds(game.batch);
+//        game.batch.draw(cloud, cloud.getX(), cloud.getY());
         game.batch.end();
 
         b2dr.render(world, mainCamera.combined);
