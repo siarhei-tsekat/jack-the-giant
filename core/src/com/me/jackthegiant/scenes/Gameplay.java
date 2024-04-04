@@ -4,6 +4,7 @@ import static com.me.jackthegiant.GameMain.W_HEIGHT;
 import static com.me.jackthegiant.GameMain.W_WIDTH;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -81,7 +82,7 @@ public class Gameplay implements Screen {
 
     @Override
     public void render(float delta) {
-
+        handleInput();
 
         moveCamera();
         checkBackgroundPosition();
@@ -132,5 +133,13 @@ public class Gameplay implements Screen {
     public void dispose() {
         world.dispose();
         b2dr.dispose();
+    }
+
+    public void handleInput() {
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            player.moveLeft();
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            player.moveRight();
+        }
     }
 }

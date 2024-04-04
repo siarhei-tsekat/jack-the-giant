@@ -37,12 +37,24 @@ public class Player extends Sprite {
 
         body.createFixture(fdef);
     }
-
+    
     public void update(float delta) {
         setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
     }
 
     public void draw(SpriteBatch batch) {
         batch.draw(this, getX(), getY());
+    }
+
+    public void moveLeft() {
+        //        body.applyLinearImpulse(new Vector2(400f, 10), body.getWorldCenter(), true);
+//        body.applyForce(new Vector2(400f, 0), new Vector2(body.getPosition().x, body.getPosition().y), true);
+//        body.applyLinearImpulse(new Vector2(40000f, 0), new Vector2(getX(), getY()), true);
+//        body.applyLinearImpulse(new Vector2(40000f, 0), body.getWorldCenter(), true);
+//        body.setLinearVelocity(x, body.getLinearVelocity().y);
+    }
+
+    public void moveRight() {
+
     }
 }
