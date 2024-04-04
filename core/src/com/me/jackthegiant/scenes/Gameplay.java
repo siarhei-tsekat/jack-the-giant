@@ -15,8 +15,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
-import com.me.jackthegiant.sprites.Cloud;
 import com.me.jackthegiant.sprites.CloudsController;
+import com.me.jackthegiant.sprites.Player;
 
 public class Gameplay implements Screen {
 
@@ -28,6 +28,7 @@ public class Gameplay implements Screen {
     private Viewport gameViewPort;
     private float lastYPosition;
     private CloudsController cloudsController;
+    private Player player;
 
     public Gameplay(GameMain gameMain) {
         game = gameMain;
@@ -41,7 +42,7 @@ public class Gameplay implements Screen {
 
         createBackgrounds();
         cloudsController = new CloudsController(world);
-//        cloud = new Cloud(world, W_WIDTH / 2f, W_HEIGHT / 2f, "cloud_0.png");
+        player = new Player(world, "player.png", W_WIDTH / 2f, W_HEIGHT / 2f + 100);
     }
 
     private void createBackgrounds() {
@@ -75,15 +76,18 @@ public class Gameplay implements Screen {
     }
 
     private void moveCamera() {
-        mainCamera.position.y -= 3;
+        mainCamera.position.y -= 1;
     }
 
     @Override
     public void render(float delta) {
+
+
         moveCamera();
         checkBackgroundPosition();
         mainCamera.update();
         game.batch.setProjectionMatrix(mainCamera.combined);
+
 
         cloudsController.setCameraY(mainCamera.position.y);
         cloudsController.createAndArrangeNewClouds();
@@ -94,11 +98,14 @@ public class Gameplay implements Screen {
         game.batch.begin();
         drawBackgrounds();
         cloudsController.drawClouds(game.batch);
-//        game.batch.draw(cloud, cloud.getX(), cloud.getY());
+        player.draw(game.batch);
         game.batch.end();
 
         b2dr.render(world, mainCamera.combined);
 
+        player.update(delta);
+
+        world.step(1 / 60f, 6, 2);
     }
 
     @Override
