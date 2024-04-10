@@ -1,5 +1,8 @@
 package com.me.jackthegiant.sprites;
 
+
+import static com.me.jackthegiant.scenes.Gameplay.PPM;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,19 +19,21 @@ public class Player extends Sprite {
     public Player(World world, String name, float x, float y) {
         super(new Texture(name));
         this.world = world;
-        setPosition(x - getWidth() / 2f, y - getHeight() / 2f);
+
+        setPosition((x - getWidth() / 2) / PPM, (y - getHeight() / 2) / PPM);
         defineBody();
     }
 
     private void defineBody() {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.DynamicBody;
-        bdef.position.set(getX() + getWidth() / 2, getY() + getHeight() / 2);
 
+        bdef.position.set(getX() + getWidth() / 2f / PPM, getY() + getHeight() / 2f / PPM);
         body = world.createBody(bdef);
+        body.setFixedRotation(true);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(getWidth() / 2, getHeight() / 2);
+        shape.setAsBox(getWidth() / 2f / PPM, getHeight() / 2f / PPM);
 
         FixtureDef fdef = new FixtureDef();
         fdef.density = 4f; // mass of the body
@@ -37,24 +42,20 @@ public class Player extends Sprite {
 
         body.createFixture(fdef);
     }
-    
+
     public void update(float delta) {
-        setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
+        setPosition(body.getPosition().x - getWidth() / 2 / PPM, body.getPosition().y - getHeight() / 2 / PPM);
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(this, getX(), getY());
+        batch.draw(this, getX(), getY(), getWidth() / PPM, getHeight() / PPM);
     }
 
     public void moveLeft() {
-        //        body.applyLinearImpulse(new Vector2(400f, 10), body.getWorldCenter(), true);
-//        body.applyForce(new Vector2(400f, 0), new Vector2(body.getPosition().x, body.getPosition().y), true);
-//        body.applyLinearImpulse(new Vector2(40000f, 0), new Vector2(getX(), getY()), true);
-//        body.applyLinearImpulse(new Vector2(40000f, 0), body.getWorldCenter(), true);
-//        body.setLinearVelocity(x, body.getLinearVelocity().y);
+        body.setLinearVelocity(-10, body.getLinearVelocity().y);
     }
 
     public void moveRight() {
-
+        body.setLinearVelocity(10, body.getLinearVelocity().y);
     }
 }

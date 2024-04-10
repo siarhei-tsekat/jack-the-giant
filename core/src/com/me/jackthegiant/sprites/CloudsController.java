@@ -1,7 +1,8 @@
 package com.me.jackthegiant.sprites;
 
-import static com.me.jackthegiant.GameMain.W_HEIGHT;
-import static com.me.jackthegiant.GameMain.W_WIDTH;
+import static com.me.jackthegiant.scenes.Gameplay.PPM;
+import static com.me.jackthegiant.scenes.Gameplay.W_HEIGHT;
+import static com.me.jackthegiant.scenes.Gameplay.W_WIDTH;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,7 +23,7 @@ public class CloudsController {
 
     private void createClouds() {
 
-        float distance_between_clouds = 250f;
+        float distance_between_clouds = 250f ;
         float x = W_WIDTH / 2f;
 
         float minX = W_WIDTH / 2f - 110;
@@ -66,7 +67,7 @@ public class CloudsController {
 
     public void drawClouds(SpriteBatch batch) {
         for (Cloud cloud : clouds) {
-            batch.draw(cloud, cloud.getX(), cloud.getY());
+            batch.draw(cloud, cloud.getX(), cloud.getY(), cloud.getWidth() / PPM, cloud.getHeight() / PPM);
         }
     }
 
