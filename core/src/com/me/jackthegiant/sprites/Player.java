@@ -52,10 +52,10 @@ public class Player extends Sprite {
     }
 
     public void moveLeft() {
-        body.setLinearVelocity(-10, body.getLinearVelocity().y);
+        body.setLinearVelocity(-15, body.getLinearVelocity().y);
     }
 
     public void moveRight() {
-        body.setLinearVelocity(10, body.getLinearVelocity().y);
+        body.setLinearVelocity(15, body.getLinearVelocity().y);
     }
 }

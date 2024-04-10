@@ -81,7 +81,7 @@ public class Gameplay implements Screen {
     }
 
     private void moveCamera() {
-        mainCamera.position.y -= .1;
+        mainCamera.position.y -= 0.08;
     }
 
     @Override
