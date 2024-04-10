@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
 import com.me.jackthegiant.sprites.CloudsController;
 import com.me.jackthegiant.sprites.Player;
@@ -25,7 +27,7 @@ public class Gameplay implements Screen {
     private Sprite[] bg;
     private OrthographicCamera mainCamera;
     private Box2DDebugRenderer b2dr;
-    //    private Viewport gameViewPort;
+    private Viewport gameViewPort;
     private float lastYPosition;
     private CloudsController cloudsController;
     private Player player;
@@ -36,9 +38,8 @@ public class Gameplay implements Screen {
         float h = Gdx.graphics.getHeight();
 
         mainCamera = new OrthographicCamera(40, 40 * (h / w));
-//        gameViewPort = new FillViewport(W_WIDTH / PPM, W_HEIGHT / PPM, mainCamera);
+        gameViewPort = new FillViewport(W_WIDTH / PPM, W_HEIGHT / PPM, mainCamera);
         mainCamera.position.set(mainCamera.viewportWidth / 2f, mainCamera.viewportHeight / 2f, 0);
-
 
         world = new World(new Vector2(0, -10), true);
         b2dr = new Box2DDebugRenderer();
@@ -61,7 +62,6 @@ public class Gameplay implements Screen {
     private void drawBackgrounds() {
         for (int i = 0; i < bg.length; i++) {
             bg[i].draw(game.batch);
-//            game.batch.draw(bg[i], bg[i].getX(), bg[i].getY());
         }
     }
 
@@ -115,7 +115,7 @@ public class Gameplay implements Screen {
 
     @Override
     public void resize(int width, int height) {
-//        gameViewPort.update(width, height);
+        gameViewPort.update(width, height);
     }
 
     @Override
