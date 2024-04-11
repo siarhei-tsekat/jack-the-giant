@@ -7,6 +7,7 @@ import static com.me.jackthegiant.scenes.Gameplay.W_WIDTH;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.me.jackthegiant.collecctables.Collectable;
 
 import java.util.Random;
 
@@ -14,6 +15,8 @@ public class CloudsController {
     private float cameraY;
     private World world;
     Array<Cloud> clouds = new Array<>();
+    Array<Collectable> collectables = new Array<>();
+
     private float lastCloudPositionY = W_HEIGHT / 2f;
 
     public CloudsController(World world) {
@@ -23,7 +26,7 @@ public class CloudsController {
 
     private void createClouds() {
 
-        float distance_between_clouds = 250f ;
+        float distance_between_clouds = 250f;
         float x = W_WIDTH / 2f;
 
         float minX = W_WIDTH / 2f - 110;
@@ -59,6 +62,10 @@ public class CloudsController {
             clouds.add(new Cloud(world, randomX, lastCloudPositionY, name));
             lastCloudPositionY -= distance_between_clouds;
         }
+
+        Collectable c1 = new Collectable(world, "Coin_collectable.png", clouds.get(1).getX() + clouds.get(1).getWidth() / 2f / PPM, clouds.get(1).getY() + 5);
+        collectables.add(c1);
+
     }
 
     private float getRandomX(float minX, float maxX) {
@@ -68,6 +75,13 @@ public class CloudsController {
     public void drawClouds(SpriteBatch batch) {
         for (Cloud cloud : clouds) {
             batch.draw(cloud, cloud.getX(), cloud.getY(), cloud.getWidth() / PPM, cloud.getHeight() / PPM);
+        }
+    }
+
+    public void drawCollectable(SpriteBatch batch) {
+        for (Collectable collectable : collectables) {
+            collectable.update();
+            batch.draw(collectable, collectable.getX(), collectable.getY(), collectable.getWidth() / PPM, collectable.getHeight() / PPM);
         }
     }
 
@@ -83,7 +97,7 @@ public class CloudsController {
             }
         }
 
-        if(clouds.size == 4) {
+        if (clouds.size == 4) {
             createClouds();
         }
     }

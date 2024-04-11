@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
+import com.me.jackthegiant.WorldContactListener;
 import com.me.jackthegiant.huds.UIHud;
 import com.me.jackthegiant.sprites.CloudsController;
 import com.me.jackthegiant.sprites.Player;
@@ -44,6 +45,7 @@ public class Gameplay implements Screen {
         mainCamera.position.set(mainCamera.viewportWidth / 2f+4, mainCamera.viewportHeight / 2f, 0);
 
         world = new World(new Vector2(0, -10), true);
+        world.setContactListener(new WorldContactListener());
         b2dr = new Box2DDebugRenderer();
 
         createBackgrounds();
@@ -84,7 +86,7 @@ public class Gameplay implements Screen {
     }
 
     private void moveCamera() {
-//        mainCamera.position.y -= 0.04;
+        mainCamera.position.y -= 0.04;
     }
 
     @Override
@@ -106,6 +108,7 @@ public class Gameplay implements Screen {
         game.batch.begin();
         drawBackgrounds();
         cloudsController.drawClouds(game.batch);
+        cloudsController.drawCollectable(game.batch);
         player.drawPlayerIdle(game.batch);
         game.batch.end();
 
