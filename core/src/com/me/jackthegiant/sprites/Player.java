@@ -3,18 +3,27 @@ package com.me.jackthegiant.sprites;
 
 import static com.me.jackthegiant.scenes.Gameplay.PPM;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 public class Player extends Sprite {
     private World world;
     private Body body;
+    private TextureAtlas playerAtlas;
+    private Animation<TextureRegion> animation;
+    private float elapsedTime;
+    private boolean isWalking;
 
     public Player(World world, String name, float x, float y) {
         super(new Texture(name));
@@ -22,6 +31,8 @@ public class Player extends Sprite {
 
         setPosition((x - getWidth() / 2) / PPM, (y - getHeight() / 2) / PPM);
         defineBody();
+
+        playerAtlas = new TextureAtlas("player_f/player_animation.atlas");
     }
 
     private void defineBody() {
@@ -36,8 +47,8 @@ public class Player extends Sprite {
         shape.setAsBox(getWidth() / 2f / PPM, getHeight() / 2f / PPM);
 
         FixtureDef fdef = new FixtureDef();
-        fdef.density = 4f; // mass of the body
-        fdef.friction = 2f; // will make player not slide on surfaces
+        fdef.density = 90000f; // mass of the body
+        fdef.friction = 30f; // will make player not slide on surfaces
         fdef.shape = shape;
 
         body.createFixture(fdef);
@@ -47,15 +58,43 @@ public class Player extends Sprite {
         setPosition(body.getPosition().x - getWidth() / 2 / PPM, body.getPosition().y - getHeight() / 2 / PPM);
     }
 
-    public void draw(SpriteBatch batch) {
-        batch.draw(this, getX(), getY(), getWidth() / PPM, getHeight() / PPM);
+    public void drawPlayerIdle(SpriteBatch batch) {
+        if (!isWalking) {
+            batch.draw(this, getX(), getY(), getWidth() / PPM, getHeight() / PPM);
+        } else {
+            elapsedTime += Gdx.graphics.getDeltaTime();
+
+            Array<TextureAtlas.AtlasRegion> frames = playerAtlas.getRegions();
+            for (TextureAtlas.AtlasRegion frame : frames) {
+                if (body.getLinearVelocity().x < 0 && !frame.isFlipX()) {
+                    frame.flip(true, false);
+                } else if (body.getLinearVelocity().x > 0 && frame.isFlipX()) {
+                    frame.flip(true, false);
+                }
+            }
+            animation = new Animation<TextureRegion>(1f / 9f, playerAtlas.getRegions());
+
+            batch.draw(animation.getKeyFrame(elapsedTime, true), getX(), getY(), getWidth() / PPM, getHeight() / PPM);
+        }
     }
 
     public void moveLeft() {
+        if(!isFlipX()) {
+            flip(true, false);
+        }
+        isWalking = true;
         body.setLinearVelocity(-15, body.getLinearVelocity().y);
     }
 
     public void moveRight() {
+        if(isFlipX()) {
+            flip(true, false);
+        }
+        isWalking = true;
         body.setLinearVelocity(15, body.getLinearVelocity().y);
+    }
+
+    public void setWalking(boolean walking) {
+        isWalking = walking;
     }
 }

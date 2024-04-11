@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.me.jackthegiant.scenes.Gameplay;
+import com.me.jackthegiant.scenes.MainMenu;
 
 public class GameMain extends Game {
 
@@ -14,7 +15,7 @@ public class GameMain extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        setScreen(new Gameplay(this));
+        setScreen(new MainMenu(this));
     }
 
     @Override
