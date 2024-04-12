@@ -1,6 +1,10 @@
 package com.me.jackthegiant.sprites;
 
 
+import static com.me.jackthegiant.scenes.Gameplay.COIN_BIT;
+import static com.me.jackthegiant.scenes.Gameplay.DEFAULT_BIT;
+import static com.me.jackthegiant.scenes.Gameplay.LIFE_BIT;
+import static com.me.jackthegiant.scenes.Gameplay.PLAYER_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.PPM;
 
 import com.badlogic.gdx.Gdx;
@@ -12,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -43,19 +48,23 @@ public class Player extends Sprite {
         body = world.createBody(bdef);
         body.setFixedRotation(true);
 
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(getWidth() / 2f / PPM, getHeight() / 2f / PPM);
+//        PolygonShape shape = new PolygonShape();
+//        shape.setAsBox(getWidth() / 2f / PPM, getHeight() / 2f / PPM);
 
+        CircleShape shape = new CircleShape();
+        shape.setRadius(3);
         FixtureDef fdef = new FixtureDef();
         fdef.density = 90000f; // mass of the body
         fdef.friction = 30f; // will make player not slide on surfaces
         fdef.shape = shape;
+        fdef.filter.categoryBits = PLAYER_BIT;
+        fdef.filter.maskBits = DEFAULT_BIT | COIN_BIT | LIFE_BIT;
 
-        body.createFixture(fdef);
+        body.createFixture(fdef).setUserData(this);
     }
 
     public void update(float delta) {
-        setPosition(body.getPosition().x - getWidth() / 2 / PPM, body.getPosition().y - getHeight() / 2 / PPM);
+        setPosition(body.getPosition().x - getWidth() / 2 / PPM, body.getPosition().y - getHeight() / 4 / PPM);
     }
 
     public void drawPlayerIdle(SpriteBatch batch) {

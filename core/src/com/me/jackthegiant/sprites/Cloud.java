@@ -32,7 +32,7 @@ public class Cloud extends Sprite {
         body = world.createBody(bdef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(getWidth() / 2f / PPM, getHeight() / 2f / PPM);
+        shape.setAsBox(getWidth() / 2f / PPM - 1.5f, getHeight() / 2f / PPM - 0.8f);
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;

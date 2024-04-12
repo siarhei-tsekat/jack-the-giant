@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
+import com.me.jackthegiant.GameManager;
 import com.me.jackthegiant.WorldContactListener;
 import com.me.jackthegiant.huds.UIHud;
 import com.me.jackthegiant.sprites.CloudsController;
@@ -23,6 +24,12 @@ public class Gameplay implements Screen {
     public static final int W_WIDTH = 480;
     public static final int W_HEIGHT = 800;
     public static final int PPM = 10;
+
+    public static final short DEFAULT_BIT = 1;
+    public static final short PLAYER_BIT = 2;
+    public static final short COIN_BIT = 4;
+    public static final short LIFE_BIT = 8;
+    public static final short DESTROYED_BIT = 16;
 
     private World world;
     private GameMain game;
@@ -35,6 +42,8 @@ public class Gameplay implements Screen {
     private Player player;
     private UIHud uiHud;
 
+    private boolean touchedFirstTime;
+
     public Gameplay(GameMain gameMain) {
         game = gameMain;
         float w = Gdx.graphics.getWidth();
@@ -42,10 +51,10 @@ public class Gameplay implements Screen {
 
         mainCamera = new OrthographicCamera(40, 40 * (h / w));
         gameViewPort = new FillViewport(W_WIDTH / PPM, W_HEIGHT / PPM, mainCamera);
-        mainCamera.position.set(mainCamera.viewportWidth / 2f+4, mainCamera.viewportHeight / 2f, 0);
+        mainCamera.position.set(mainCamera.viewportWidth / 2f + 4, mainCamera.viewportHeight / 2f, 0);
 
         world = new World(new Vector2(0, -10), true);
-        world.setContactListener(new WorldContactListener());
+        world.setContactListener(new WorldContactListener(this));
         b2dr = new Box2DDebugRenderer();
 
         createBackgrounds();
@@ -86,21 +95,40 @@ public class Gameplay implements Screen {
     }
 
     private void moveCamera() {
-        mainCamera.position.y -= 0.04;
+        mainCamera.position.y -= 0.08;
+    }
+
+    public void checkForFirstTouch() {
+        if (!touchedFirstTime) {
+            if (Gdx.input.justTouched()) {
+                touchedFirstTime = true;
+                GameManager.getInstance().isPaused = false;
+            }
+        }
+    }
+
+    private void update() {
+
+        checkForFirstTouch();
+
+        if (!GameManager.getInstance().isPaused) {
+            handleInput();
+            moveCamera();
+            checkBackgroundPosition();
+            cloudsController.setCameraY(mainCamera.position.y);
+            cloudsController.createAndArrangeNewClouds();
+            cloudsController.removeOffScreenCollectables();
+        }
     }
 
     @Override
     public void render(float delta) {
-        handleInput();
 
-        moveCamera();
-        checkBackgroundPosition();
+        update();
+
         mainCamera.update();
         game.batch.setProjectionMatrix(mainCamera.combined);
 
-
-        cloudsController.setCameraY(mainCamera.position.y);
-        cloudsController.createAndArrangeNewClouds();
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -157,5 +185,9 @@ public class Gameplay implements Screen {
         } else {
             player.setWalking(false);
         }
+    }
+
+    public UIHud getHud() {
+        return uiHud;
     }
 }

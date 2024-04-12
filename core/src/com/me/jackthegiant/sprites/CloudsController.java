@@ -7,7 +7,9 @@ import static com.me.jackthegiant.scenes.Gameplay.W_WIDTH;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.me.jackthegiant.collecctables.Coin;
 import com.me.jackthegiant.collecctables.Collectable;
+import com.me.jackthegiant.collecctables.Life;
 
 import java.util.Random;
 
@@ -59,13 +61,32 @@ public class CloudsController {
                 prev_left = false;
             }
 
-            clouds.add(new Cloud(world, randomX, lastCloudPositionY, name));
+            Cloud cloud = new Cloud(world, randomX, lastCloudPositionY, name);
+            clouds.add(cloud);
             lastCloudPositionY -= distance_between_clouds;
+
+            if (!name.contains("dark") && i != 0) {
+
+                int rand = new Random().nextInt(10);
+                if (rand > 5) {
+                    int ra2 = new Random().nextInt(2);
+
+                    if (ra2 == 0) {
+                        Life l1 = new Life(world, "life.png", cloud.getX() + cloud.getWidth() / 2f / PPM, cloud.getY() + 5, this);
+                        collectables.add(l1);
+                    } else {
+                        Coin c1 = new Coin(world, "Coin_collectable.png", cloud.getX() + cloud.getWidth() / 2f / PPM, cloud.getY() + 5, this);
+                        collectables.add(c1);
+                    }
+                }
+            }
         }
 
-        Collectable c1 = new Collectable(world, "Coin_collectable.png", clouds.get(1).getX() + clouds.get(1).getWidth() / 2f / PPM, clouds.get(1).getY() + 5);
-        collectables.add(c1);
 
+    }
+
+    public void remove(Collectable collectable) {
+        collectables.removeValue(collectable, true);
     }
 
     private float getRandomX(float minX, float maxX) {
@@ -91,7 +112,7 @@ public class CloudsController {
 
     public void createAndArrangeNewClouds() {
         for (int i = 0; i < clouds.size; i++) {
-            if ((clouds.get(i).getY() - W_HEIGHT / 2) > cameraY) {
+            if ((clouds.get(i).getY() - W_HEIGHT / 2 / PPM) > cameraY) {
                 clouds.get(i).getTexture().dispose();
                 clouds.removeIndex(i);
             }
@@ -99,6 +120,15 @@ public class CloudsController {
 
         if (clouds.size == 4) {
             createClouds();
+        }
+    }
+
+    public void removeOffScreenCollectables() {
+        for (int i = 0; i < collectables.size; i++) {
+            if ((collectables.get(i).getY() - W_HEIGHT / 2 / PPM) > cameraY) {
+                collectables.get(i).getTexture().dispose();
+                collectables.removeIndex(i);
+            }
         }
     }
 }
