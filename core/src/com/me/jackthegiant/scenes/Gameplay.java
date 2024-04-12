@@ -262,7 +262,7 @@ public class Gameplay implements Screen {
         player.drawPlayerIdle(game.batch);
         game.batch.end();
 
-        b2dr.render(world, mainCamera.combined);
+//        b2dr.render(world, mainCamera.combined);
 
         game.batch.setProjectionMatrix(uiHud.getStage().getCamera().combined);
         uiHud.getStage().draw();
