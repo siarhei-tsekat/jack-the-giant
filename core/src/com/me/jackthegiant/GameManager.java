@@ -1,6 +1,7 @@
 package com.me.jackthegiant;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Base64Coder;
 import com.badlogic.gdx.utils.Json;
@@ -26,6 +27,7 @@ public class GameManager {
     private GameData gameData;
     private Json json = new Json();
     private FileHandle fileHandle = Gdx.files.local("bin/gamedata.json");
+    private Music music;
 
     public void initializeData() {
         if (!fileHandle.exists()) {
@@ -76,5 +78,22 @@ public class GameManager {
 
     public GameData gameData() {
         return gameData;
+    }
+
+    public void playMusic() {
+        if (music == null) {
+            music = Gdx.audio.newMusic(Gdx.files.internal("sounds/Background.mp3"));
+        }
+
+        if (!music.isPlaying()) {
+            music.play();
+        }
+    }
+
+    public void stopMusic() {
+        if (music.isPlaying()) {
+            music.stop();
+            music.dispose();
+        }
     }
 }

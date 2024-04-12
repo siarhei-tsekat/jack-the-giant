@@ -80,6 +80,30 @@ public class MainMenuButtons {
                 game.setScreen(new OptionsScreen(game));
             }
         });
+
+        musicBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+                if (GameManager.getInstance().gameData().isMusicOn()) {
+                    GameManager.getInstance().gameData().setMusicOn(false);
+                    GameManager.getInstance().stopMusic();
+                } else {
+                    GameManager.getInstance().gameData().setMusicOn(true);
+                    GameManager.getInstance().playMusic();
+                }
+
+                GameManager.getInstance().saveData();
+            }
+        });
+
+        checkMusic();
+    }
+
+    public void checkMusic() {
+        if (GameManager.getInstance().gameData().isMusicOn()) {
+            GameManager.getInstance().playMusic();
+        }
     }
 
     public Stage getStage() {

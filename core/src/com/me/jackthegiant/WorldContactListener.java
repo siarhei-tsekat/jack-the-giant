@@ -37,6 +37,7 @@ public class WorldContactListener implements ContactListener {
                 } else {
                     ((Coin) fixA.getUserData()).remove();
                 }
+                gameplay.getCoinSound().play();
                 gameplay.getHud().incrementCoins();
                 break;
             case PLAYER_BIT | LIFE_BIT:
@@ -45,6 +46,7 @@ public class WorldContactListener implements ContactListener {
                 } else {
                     ((Life) fixA.getUserData()).remove();
                 }
+                gameplay.getLifeSound().play();
                 gameplay.getHud().incrementLife();
                 break;
             case PLAYER_BIT | DARK_CLOUD_BIT:

@@ -3,6 +3,7 @@ package com.me.jackthegiant.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -53,6 +54,9 @@ public class Gameplay implements Screen {
     private float maxSpeed = 10;
     private float acceleration = 10;
 
+    private Sound coinSound;
+    private Sound lifeSound;
+
     public Gameplay(GameMain gameMain) {
         game = gameMain;
         float w = Gdx.graphics.getWidth();
@@ -73,6 +77,18 @@ public class Gameplay implements Screen {
         uiHud = new UIHud(game);
 
         setCameraSpeed();
+
+        coinSound = Gdx.audio.newSound(Gdx.files.internal("sounds/Coin Sound.wav"));
+        lifeSound = Gdx.audio.newSound(Gdx.files.internal("sounds/Life Sound.wav"));
+    }
+
+
+    public Sound getCoinSound() {
+        return coinSound;
+    }
+
+    public Sound getLifeSound() {
+        return lifeSound;
     }
 
     private void createBackgrounds() {
@@ -281,6 +297,8 @@ public class Gameplay implements Screen {
         world.dispose();
         b2dr.dispose();
         player.getTexture().dispose();
+        coinSound.dispose();
+        lifeSound.dispose();
     }
 
     public void handleInput() {
