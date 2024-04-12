@@ -41,15 +41,6 @@ public class CloudsController {
         boolean prev_left = false;
 
         for (int i = 0; i < 8; i++) {
-            String name;
-
-            if (new Random().nextBoolean() || prev_dark) {
-                name = "cloud_" + i % 3 + ".png";
-                prev_dark = false;
-            } else {
-                name = "dark_cloud.png";
-                prev_dark = true;
-            }
 
             float randomX;
 
@@ -61,11 +52,19 @@ public class CloudsController {
                 prev_left = false;
             }
 
-            Cloud cloud = new Cloud(world, randomX, lastCloudPositionY, name);
+            Cloud cloud;
+            if (new Random().nextBoolean() || prev_dark) {
+                cloud = new Cloud(world, randomX, lastCloudPositionY, "cloud_" + i % 3 + ".png");
+                prev_dark = false;
+            } else {
+                cloud = new DarkCloud(world, randomX, lastCloudPositionY, "dark_cloud.png");
+                prev_dark = true;
+            }
+
             clouds.add(cloud);
             lastCloudPositionY -= distance_between_clouds;
 
-            if (!name.contains("dark") && i != 0) {
+            if (!(cloud instanceof DarkCloud) && i != 0) {
 
                 int rand = new Random().nextInt(10);
                 if (rand > 5) {

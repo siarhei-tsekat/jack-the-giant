@@ -161,4 +161,34 @@ public class UIHud {
         lifeLabel.setText("x" + GameManager.getInstance().lifeScore);
         incrementScore(300);
     }
+
+    public void decrementLife() {
+        GameManager.getInstance().lifeScore--;
+        if (GameManager.getInstance().lifeScore >= 0) {
+            lifeLabel.setText("x" + GameManager.getInstance().lifeScore);
+        }
+    }
+
+    public void createGameOverPanel() {
+        Image gameOverPanel = new Image(new Texture("Show Score.png"));
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("blow.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 70;
+
+        BitmapFont font = generator.generateFont(parameter);
+
+        Label endScore = new Label("" + GameManager.getInstance().score, new Label.LabelStyle(font, Color.WHITE));
+        Label endCoinScore = new Label("" + GameManager.getInstance().coinScore, new Label.LabelStyle(font, Color.WHITE));
+
+        gameOverPanel.setPosition(W_WIDTH / 2f, W_HEIGHT / 2f, Align.center);
+
+        endScore.setPosition(W_WIDTH / 2f - 30, W_HEIGHT / 2f + 20, Align.center);
+        endCoinScore.setPosition(W_WIDTH / 2f - 30, W_HEIGHT / 2f - 90, Align.center);
+
+        stage.addActor(gameOverPanel);
+        stage.addActor(endScore);
+        stage.addActor(endCoinScore);
+
+    }
 }

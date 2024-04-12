@@ -1,28 +1,19 @@
 package com.me.jackthegiant.sprites;
 
+import static com.me.jackthegiant.scenes.Gameplay.DARK_CLOUD_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.PPM;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Cloud extends Sprite {
+public class DarkCloud extends Cloud {
 
-    protected World world;
-    protected Body body;
-
-    public Cloud(World world, float x, float y, String name) {
-        super(new Texture(name));
-
-        this.world = world;
-        setPosition((x - getWidth() / 2) / PPM, (y - getHeight() / 2) / PPM);
-
-        defineBody();
+    public DarkCloud(World world, float x, float y, String name) {
+        super(world, x, y, name);
     }
+
 
     protected void defineBody() {
         BodyDef bdef = new BodyDef();
@@ -36,6 +27,8 @@ public class Cloud extends Sprite {
 
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
+        fdef.filter.categoryBits = DARK_CLOUD_BIT;
+        fdef.isSensor = true;
 
         body.createFixture(fdef);
     }

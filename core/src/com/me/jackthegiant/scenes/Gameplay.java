@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.me.jackthegiant.GameMain;
@@ -30,6 +33,7 @@ public class Gameplay implements Screen {
     public static final short COIN_BIT = 4;
     public static final short LIFE_BIT = 8;
     public static final short DESTROYED_BIT = 16;
+    public static final short DARK_CLOUD_BIT = 32;
 
     private World world;
     private GameMain game;
@@ -43,6 +47,7 @@ public class Gameplay implements Screen {
     private UIHud uiHud;
 
     private boolean touchedFirstTime;
+    private float lastPlayerY;
 
     public Gameplay(GameMain gameMain) {
         game = gameMain;
@@ -60,6 +65,7 @@ public class Gameplay implements Screen {
         createBackgrounds();
         cloudsController = new CloudsController(world);
         player = new Player(world, "player.png", W_WIDTH / 2f, W_HEIGHT / 2f + 100);
+        lastPlayerY = player.getY();
         uiHud = new UIHud(game);
     }
 
@@ -89,9 +95,75 @@ public class Gameplay implements Screen {
         }
     }
 
+    public void checkPlayerBounds() {
+        if (player.getY() - W_HEIGHT / 2f / PPM - player.getHeight() / 2f / PPM > mainCamera.position.y) {
+            if (!player.isDead()) {
+                playerDied();
+            }
+        }
+
+        if (player.getY() + W_HEIGHT / 2f / PPM + player.getHeight() / 2f / PPM < mainCamera.position.y) {
+            if (!player.isDead()) {
+                playerDied();
+            }
+        }
+
+        if (player.getX() > W_WIDTH / PPM) {
+            if (!player.isDead()) {
+                playerDied();
+            }
+        } else if (player.getX() + player.getWidth() / 2f / PPM < 0) {
+            if (!player.isDead()) {
+                playerDied();
+            }
+        }
+    }
+
+    public void playerDied() {
+        GameManager.getInstance().isPaused = true;
+        uiHud.decrementLife();
+        player.setDead(true);
+
+        if (GameManager.getInstance().lifeScore < 0) {
+
+            uiHud.createGameOverPanel();
+
+            RunnableAction run = new RunnableAction();
+            run.setRunnable(() -> {
+                game.setScreen(new MainMenu(game));
+            });
+            SequenceAction sa = new SequenceAction();
+            sa.addAction(Actions.delay(2f));
+//            sa.addAction(Actions.fadeOut(1f));
+            sa.addAction(run);
+
+            uiHud.getStage().addAction(sa);
+
+        } else {
+
+            RunnableAction run = new RunnableAction();
+            run.setRunnable(() -> {
+                game.setScreen(new Gameplay(game));
+            });
+            SequenceAction sa = new SequenceAction();
+            sa.addAction(Actions.delay(2f));
+//            sa.addAction(Actions.fadeOut(1f));
+            sa.addAction(run);
+
+            uiHud.getStage().addAction(sa);
+        }
+    }
+
     @Override
     public void show() {
 
+    }
+
+    public void countScore() {
+        if (lastPlayerY - 10 > player.getY()) {
+            uiHud.incrementScore(1);
+            lastPlayerY = player.getY();
+        }
     }
 
     private void moveCamera() {
@@ -118,6 +190,8 @@ public class Gameplay implements Screen {
             cloudsController.setCameraY(mainCamera.position.y);
             cloudsController.createAndArrangeNewClouds();
             cloudsController.removeOffScreenCollectables();
+            checkPlayerBounds();
+            countScore();
         }
     }
 
@@ -144,6 +218,7 @@ public class Gameplay implements Screen {
 
         game.batch.setProjectionMatrix(uiHud.getStage().getCamera().combined);
         uiHud.getStage().draw();
+        uiHud.getStage().act();
 
         player.update(delta);
 

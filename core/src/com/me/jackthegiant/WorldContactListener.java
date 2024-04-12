@@ -1,6 +1,7 @@
 package com.me.jackthegiant;
 
 import static com.me.jackthegiant.scenes.Gameplay.COIN_BIT;
+import static com.me.jackthegiant.scenes.Gameplay.DARK_CLOUD_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.LIFE_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.PLAYER_BIT;
 
@@ -45,6 +46,9 @@ public class WorldContactListener implements ContactListener {
                     ((Life) fixA.getUserData()).remove();
                 }
                 gameplay.getHud().incrementLife();
+                break;
+            case PLAYER_BIT | DARK_CLOUD_BIT:
+                gameplay.playerDied();
                 break;
             default:
         }

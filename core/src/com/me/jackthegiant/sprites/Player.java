@@ -2,6 +2,7 @@ package com.me.jackthegiant.sprites;
 
 
 import static com.me.jackthegiant.scenes.Gameplay.COIN_BIT;
+import static com.me.jackthegiant.scenes.Gameplay.DARK_CLOUD_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.DEFAULT_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.LIFE_BIT;
 import static com.me.jackthegiant.scenes.Gameplay.PLAYER_BIT;
@@ -18,9 +19,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.me.jackthegiant.GameManager;
 
 public class Player extends Sprite {
     private World world;
@@ -29,6 +30,7 @@ public class Player extends Sprite {
     private Animation<TextureRegion> animation;
     private float elapsedTime;
     private boolean isWalking;
+    private boolean dead;
 
     public Player(World world, String name, float x, float y) {
         super(new Texture(name));
@@ -58,7 +60,7 @@ public class Player extends Sprite {
         fdef.friction = 30f; // will make player not slide on surfaces
         fdef.shape = shape;
         fdef.filter.categoryBits = PLAYER_BIT;
-        fdef.filter.maskBits = DEFAULT_BIT | COIN_BIT | LIFE_BIT;
+        fdef.filter.maskBits = DEFAULT_BIT | COIN_BIT | LIFE_BIT | DARK_CLOUD_BIT;
 
         body.createFixture(fdef).setUserData(this);
     }
@@ -88,7 +90,7 @@ public class Player extends Sprite {
     }
 
     public void moveLeft() {
-        if(!isFlipX()) {
+        if (!isFlipX()) {
             flip(true, false);
         }
         isWalking = true;
@@ -96,7 +98,7 @@ public class Player extends Sprite {
     }
 
     public void moveRight() {
-        if(isFlipX()) {
+        if (isFlipX()) {
             flip(true, false);
         }
         isWalking = true;
@@ -105,5 +107,13 @@ public class Player extends Sprite {
 
     public void setWalking(boolean walking) {
         isWalking = walking;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
+
+    public boolean isDead() {
+        return dead;
     }
 }
