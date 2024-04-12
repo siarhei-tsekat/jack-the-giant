@@ -15,6 +15,7 @@ public class GameMain extends Game {
     @Override
     public void create() {
         batch = new SpriteBatch();
+        GameManager.getInstance().initializeData();
         setScreen(new MainMenu(this));
     }
 

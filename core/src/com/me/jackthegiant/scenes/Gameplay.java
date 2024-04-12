@@ -49,6 +49,10 @@ public class Gameplay implements Screen {
     private boolean touchedFirstTime;
     private float lastPlayerY;
 
+    private float cameraSpeed = 5;
+    private float maxSpeed = 10;
+    private float acceleration = 10;
+
     public Gameplay(GameMain gameMain) {
         game = gameMain;
         float w = Gdx.graphics.getWidth();
@@ -67,6 +71,8 @@ public class Gameplay implements Screen {
         player = new Player(world, "player.png", W_WIDTH / 2f, W_HEIGHT / 2f + 100);
         lastPlayerY = player.getY();
         uiHud = new UIHud(game);
+
+        setCameraSpeed();
     }
 
     private void createBackgrounds() {
@@ -126,6 +132,8 @@ public class Gameplay implements Screen {
 
         if (GameManager.getInstance().lifeScore < 0) {
 
+            GameManager.getInstance().checkForNewHighScores();
+
             uiHud.createGameOverPanel();
 
             RunnableAction run = new RunnableAction();
@@ -166,8 +174,31 @@ public class Gameplay implements Screen {
         }
     }
 
-    private void moveCamera() {
-        mainCamera.position.y -= 0.08;
+    private void moveCamera(float delta) {
+//        mainCamera.position.y -= 0.08f;
+        mainCamera.position.y -= cameraSpeed * delta;
+        cameraSpeed += acceleration * delta;
+
+        if (cameraSpeed > maxSpeed) {
+            cameraSpeed = maxSpeed;
+        }
+    }
+
+    private void setCameraSpeed() {
+        if (GameManager.getInstance().gameData().isEasyDifficulty()) {
+            cameraSpeed = 1;
+            maxSpeed = 3;
+        }
+
+        if (GameManager.getInstance().gameData().isMediumDifficulty()) {
+            cameraSpeed = 3;
+            maxSpeed = 6;
+        }
+
+        if (GameManager.getInstance().gameData().isHardDifficulty()) {
+            cameraSpeed = 6;
+            maxSpeed = 9;
+        }
     }
 
     public void checkForFirstTouch() {
@@ -179,13 +210,13 @@ public class Gameplay implements Screen {
         }
     }
 
-    private void update() {
+    private void update(float dt) {
 
         checkForFirstTouch();
 
         if (!GameManager.getInstance().isPaused) {
             handleInput();
-            moveCamera();
+            moveCamera(dt);
             checkBackgroundPosition();
             cloudsController.setCameraY(mainCamera.position.y);
             cloudsController.createAndArrangeNewClouds();
@@ -198,7 +229,7 @@ public class Gameplay implements Screen {
     @Override
     public void render(float delta) {
 
-        update();
+        update(delta);
 
         mainCamera.update();
         game.batch.setProjectionMatrix(mainCamera.combined);
