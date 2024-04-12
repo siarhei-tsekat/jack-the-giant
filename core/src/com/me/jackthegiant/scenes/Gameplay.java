@@ -232,6 +232,7 @@ public class Gameplay implements Screen {
 
         if (!GameManager.getInstance().isPaused) {
             handleInput();
+            handleInputAndroid();
             moveCamera(dt);
             checkBackgroundPosition();
             cloudsController.setCameraY(mainCamera.position.y);
@@ -306,6 +307,18 @@ public class Gameplay implements Screen {
             player.moveLeft();
         } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             player.moveRight();
+        } else {
+            player.setWalking(false);
+        }
+    }
+
+    public void handleInputAndroid() {
+        if (Gdx.input.isTouched()) {
+            if (Gdx.input.getX() > W_WIDTH / 2) {
+                player.moveRight();
+            } else {
+                player.moveLeft();
+            }
         } else {
             player.setWalking(false);
         }
